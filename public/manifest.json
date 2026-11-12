@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "CRM Ventas WhatsApp (interno)",
+  "version": "0.1.0",
+  "description": "Kanban interno de ventas sobre WhatsApp Web. No envía mensajes automáticos.",
+  "permissions": ["storage"],
+  "content_scripts": [
+    {
+      "matches": ["https://web.whatsapp.com/*"],
+      "js": ["wa-js/wppconnect-wa.js", "bridge.js"],
+      "world": "MAIN",
+      "run_at": "document_end"
+    },
+    {
+      "matches": ["https://web.whatsapp.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
