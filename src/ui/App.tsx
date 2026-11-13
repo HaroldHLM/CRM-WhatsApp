@@ -1,22 +1,13 @@
-import { useEffect, useMemo, useState, type DragEvent } from 'react';
-import {
-  STAGES,
-  createLead,
-  daysSince,
-  isStageId,
-  moveLead,
-  type Lead,
-  type StageId,
-} from '../domain/lead';
+import { useEffect, useMemo, useState } from 'react';
+import { STAGES, createLead, moveLead, type Lead, type StageId } from '../domain/lead';
 import type { LeadsRepository } from '../repositories/leads.repo';
 import { useBridge } from '../content/bridge-client';
-
-const DRAG_TYPE = 'text/x-crm-chat-id';
+import { TopBar } from './TopBar';
+import { Board } from './Board';
 
 export function App({ repo }: { repo: LeadsRepository }) {
-  const [open, setOpen] = useState(false);
+  const [boardOpen, setBoardOpen] = useState(false);
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [dragOver, setDragOver] = useState<StageId | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   const { ready, activeChat, error, openChat } = useBridge();
 
@@ -29,6 +20,19 @@ export function App({ repo }: { repo: LeadsRepository }) {
     load();
     return repo.onChange(load);
   }, [repo]);
+
+  // Esc cierra el tablero sin que WhatsApp lo reciba (WhatsApp cerraría el chat abierto).
+  useEffect(() => {
+    if (!boardOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      e.preventDefault();
+      e.stopPropagation();
+      setBoardOpen(false);
+    };
+    window.addEventListener('keydown', onKey, true);
+    return () => window.removeEventListener('keydown', onKey, true);
+  }, [boardOpen]);
 
   const byStage = useMemo(() => {
     const map = new Map<StageId, Lead[]>(STAGES.map((s) => [s.id, []]));
@@ -71,103 +75,34 @@ export function App({ repo }: { repo: LeadsRepository }) {
       }
     });
 
-  const onDrop = (e: DragEvent, stage: StageId) => {
-    e.preventDefault();
-    setDragOver(null);
-    const chatId = e.dataTransfer.getData(DRAG_TYPE);
-    if (chatId) move(chatId, stage);
+  const openLead = (chatId: string) => {
+    openChat(chatId);
+    setBoardOpen(false);
   };
 
   return (
     <>
-      <div className="fab-group">
-        {ready &&
-          activeChat &&
-          !activeChat.isGroup &&
-          (activeLead ? (
-            <select
-              className="fab-stage"
-              value={activeLead.stage}
-              title="Etapa del chat abierto"
-              onChange={(e) => isStageId(e.target.value) && move(activeLead.chatId, e.target.value)}
-            >
-              {STAGES.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.label}
-                </option>
-              ))}
-            </select>
-          ) : (
-            <button className="fab-add" onClick={addActive}>
-              + Agregar chat al CRM
-            </button>
-          ))}
-        <button className="fab" onClick={() => setOpen((v) => !v)} aria-expanded={open}>
-          {open ? 'Cerrar' : `CRM · ${leads.length}`}
-        </button>
-      </div>
-
-      {open && (
-        <section className="board" aria-label="Kanban de ventas">
-          <header className="board-head">
-            <h1>Kanban de ventas</h1>
-            <span className={`status ${ready ? 'ok' : 'wait'}`}>
-              {error ? error : ready ? 'Conectado a WhatsApp' : 'Esperando a WhatsApp Web…'}
-            </span>
-            {saveError && <span className="status err">{saveError}</span>}
-          </header>
-          <div className="columns">
-            {STAGES.map((stage) => {
-              const items = byStage.get(stage.id) ?? [];
-              return (
-                <div
-                  key={stage.id}
-                  className={`column stage-${stage.id} ${dragOver === stage.id ? 'over' : ''}`}
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    setDragOver(stage.id);
-                  }}
-                  onDragLeave={() => setDragOver(null)}
-                  onDrop={(e) => onDrop(e, stage.id)}
-                >
-                  <h2>
-                    {stage.label} <span className="count">{items.length}</span>
-                  </h2>
-                  {items.length === 0 && <p className="empty">Arrastra un chat aquí</p>}
-                  {items.map((lead) => (
-                    <article
-                      key={lead.chatId}
-                      className={`card ${activeChat?.chatId === lead.chatId ? 'current' : ''}`}
-                      draggable
-                      onDragStart={(e) => e.dataTransfer.setData(DRAG_TYPE, lead.chatId)}
-                      onClick={() => {
-                        openChat(lead.chatId);
-                        setOpen(false);
-                      }}
-                      title="Abrir chat"
-                    >
-                      <strong>{lead.name}</strong>
-                      <span className="phone">+{lead.phone}</span>
-                      <span className="meta">
-                        Primer contacto: hace {daysSince(lead.firstContactAt)} d
-                      </span>
-                      <button
-                        className="remove"
-                        aria-label={`Quitar ${lead.name}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          remove(lead);
-                        }}
-                      >
-                        ×
-                      </button>
-                    </article>
-                  ))}
-                </div>
-              );
-            })}
-          </div>
-        </section>
+      <TopBar
+        ready={ready}
+        error={error ?? saveError}
+        byStage={byStage}
+        activeChat={activeChat}
+        activeLead={activeLead}
+        boardOpen={boardOpen}
+        onAdd={addActive}
+        onMove={move}
+        onOpenLead={openLead}
+        onToggleBoard={() => setBoardOpen((v) => !v)}
+      />
+      {boardOpen && (
+        <Board
+          byStage={byStage}
+          activeChatId={activeChat?.chatId ?? null}
+          onMove={move}
+          onRemove={remove}
+          onOpenLead={openLead}
+          onClose={() => setBoardOpen(false)}
+        />
       )}
     </>
   );

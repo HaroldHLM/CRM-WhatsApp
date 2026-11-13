@@ -2,6 +2,7 @@ import { createRoot } from 'react-dom/client';
 import { App } from '../ui/App';
 import { styles } from '../ui/styles';
 import { StorageLeadsRepository } from '../repositories/leads.repo';
+import { reserveTopBar } from './layout';
 
 const HOST_ID = 'crm-wa-root';
 
@@ -17,6 +18,8 @@ function mount() {
   shadow.appendChild(style);
   const container = document.createElement('div');
   shadow.appendChild(container);
+
+  reserveTopBar(host);
 
   const repo = new StorageLeadsRepository(chrome.storage.local);
   createRoot(container).render(<App repo={repo} />);
