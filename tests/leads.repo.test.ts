@@ -44,7 +44,7 @@ describe('StorageLeadsRepository', () => {
     await store.set({ 'crm.leads.v1': { x: { chatId: 'x' } } });
     const repo = new StorageLeadsRepository(store);
     expect(await repo.getAll()).toEqual([]);
-    const listener = vi.fn();
+    const listener = vi.fn<() => void>();
     repo.onChange(listener);
     const { lead } = createLead({ chatId: 'c@c.us' });
     await repo.save(lead);

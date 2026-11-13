@@ -10,10 +10,11 @@ Estas bases pueden cambiar si hay una opción mejor: proponer el cambio, explica
 ## Estado actual
 
 - **Paso actual: Paso 1 (v0.1.0)**: Kanban de chats con datos en `chrome.storage.local`.
-- Implementado: botón "Agregar chat al CRM", selector de etapa del chat abierto, tablero de 5 columnas con
-  drag & drop, clic en tarjeta abre el chat, `firstContactAt` e historial de etapas guardados.
-- Pendiente para cerrar el Paso 1: ESLint (aún no está configurado), prueba con chats reales de ventas,
-  rama `main` (hoy el repo está en `master`) y remoto de git.
+- Implementado: barra superior fija (etapas con contador, etapa del chat abierto o "+ Agregar al CRM",
+  botón Tablero), tablero de 5 columnas a pantalla completa con drag & drop, clic en tarjeta abre el chat,
+  `firstContactAt` e historial de etapas guardados. La barra se oculta con el visor de imágenes/modales de WhatsApp.
+- Lint con oxlint, rama `main` y remoto `origin` en GitHub (privado).
+- Pendiente para cerrar el Paso 1: instalar el zip en las 2 PCs de ventas y usarlo en chats reales.
 
 ## Reglas de oro (no se negocian)
 
@@ -41,16 +42,17 @@ Estas bases pueden cambiar si hay una opción mejor: proponer el cambio, explica
 
 ## Arquitectura
 
-| Pieza          | Stack                                              | Desde      |
-| -------------- | -------------------------------------------------- | ---------- |
-| Bridge         | WA-JS (`@wppconnect/wa-js`) **versión exacta**     | Paso 1     |
-| UI             | React 18 + TypeScript, esbuild, Shadow DOM, CSS propio | Paso 1 |
-| Datos locales  | `chrome.storage.local`                             | Paso 1     |
-| Base de datos  | Supabase (Postgres + Auth + RLS), esquema `crm` del Supabase del ERP | Paso 3 |
-| Edge Functions | Supabase Edge Functions (secretos, IA)             | Paso 6     |
-| Export/gráficas| SheetJS o ExcelJS, Recharts                        | Pasos 4 y 5|
+| Pieza           | Stack                                                                | Desde       |
+| --------------- | -------------------------------------------------------------------- | ----------- |
+| Bridge          | WA-JS (`@wppconnect/wa-js`) **versión exacta**                       | Paso 1      |
+| UI              | React 18 + TypeScript, esbuild, Shadow DOM, CSS propio               | Paso 1      |
+| Datos locales   | `chrome.storage.local`                                               | Paso 1      |
+| Base de datos   | Supabase (Postgres + Auth + RLS), esquema `crm` del Supabase del ERP | Paso 3      |
+| Edge Functions  | Supabase Edge Functions (secretos, IA)                               | Paso 6      |
+| Export/gráficas | SheetJS o ExcelJS, Recharts                                          | Pasos 4 y 5 |
 
 **Regla clave:** la UI nunca llama a WA-JS ni a Supabase directo.
+
 - WhatsApp: `src/bridge/main.ts` (mundo MAIN) ↔ mensajes tipados en `src/contracts/bridge.ts` ↔
   `src/content/bridge-client.ts`.
 - Datos: interfaz `LeadsRepository` en `src/repositories/`. En el Paso 3 se agrega la implementación con
@@ -88,14 +90,14 @@ supabase/                 # (Paso 3) migrations/ y functions/
 
 Campos que se capturan **antes** de que existan los reportes (sin historial no hay gráficas):
 
-| Campo                                      | Reporte                    | Desde  |
-| ------------------------------------------ | -------------------------- | ------ |
-| `primer_contacto_at` (`firstContactAt`)    | Contactos por día/semana/mes | Paso 1 |
-| Historial de etapas (`LeadEvent`)          | Embudo y tiempos por etapa | Paso 1 |
-| `origen` (Facebook, Instagram, TikTok, Marketplace, referido, web, otro) | Por red | Paso 2 |
-| `producto_interes_id`                      | Por producto               | Paso 2 (catálogo ERP en Paso 3) |
-| Departamento, provincia, distrito (ubigeo) | Por lugar                  | Paso 2 |
-| `vendedor_id`                              | Por vendedor               | Paso 3 |
+| Campo                                                                    | Reporte                      | Desde                           |
+| ------------------------------------------------------------------------ | ---------------------------- | ------------------------------- |
+| `primer_contacto_at` (`firstContactAt`)                                  | Contactos por día/semana/mes | Paso 1                          |
+| Historial de etapas (`LeadEvent`)                                        | Embudo y tiempos por etapa   | Paso 1                          |
+| `origen` (Facebook, Instagram, TikTok, Marketplace, referido, web, otro) | Por red                      | Paso 2                          |
+| `producto_interes_id`                                                    | Por producto                 | Paso 2 (catálogo ERP en Paso 3) |
+| Departamento, provincia, distrito (ubigeo)                               | Por lugar                    | Paso 2                          |
+| `vendedor_id`                                                            | Por vendedor                 | Paso 3                          |
 
 En el Paso 3 se migra lo guardado localmente en cada PC a Supabase. Quitar una tarjeta **no** borra su historial.
 
@@ -118,18 +120,26 @@ El orden de los pasos 4 a 7 puede cambiar según lo que pida ventas.
 
 ```bash
 npm install
-npm run check        # tsc + vitest + build. Debe pasar antes de cada commit.
+npm run check        # tsc + oxlint + vitest + build. Debe pasar antes de cada commit.
+npm run lint         # oxlint --deny-warnings
 npm run dev          # build en watch → dist/
 CRM_COPY_TO=/mnt/c/crm-whatsapp-dev npm run dev   # WSL: copia dist/ a C:\crm-whatsapp-dev
 npm run format       # prettier
 ```
+
+Entregar una versión: subir `version` en `public/manifest.json`, `npm run check`, comprimir el contenido
+de `dist/` como `crm-whatsapp-extension-vX.Y.Z.zip` (se copia a `C:\crm-whatsapp-releases`).
+
+Ojo en WSL: si `npm run dev` con `CRM_COPY_TO` no está corriendo, Chrome sigue cargando la versión vieja.
 
 Probar en WhatsApp Web: cargar `dist/` (o `C:\crm-whatsapp-dev` en WSL) en `chrome://extensions` con
 "Cargar descomprimida"; tras cada cambio, ↻ en la extensión y recargar `web.whatsapp.com`.
 
 ## Convenciones
 
-- TypeScript estricto, Prettier, ESLint (por configurar). Build verde antes de cada commit.
+- TypeScript estricto, Prettier y oxlint (`.oxlintrc.json`, reglas compatibles con ESLint; se usa en vez
+  de ESLint porque typescript-eslint no soporta TypeScript 7). Lint bloquea importar `@wppconnect/*` fuera
+  del bridge y `dangerouslySetInnerHTML`. Build verde antes de cada commit.
 - Git: rama `main` + ramas cortas `feat/…`, `fix/…`; Conventional Commits en español
   (`feat: notas en la ficha del lead`).
 - Código en inglés; textos de la UI en español; tablas Postgres en `snake_case`.

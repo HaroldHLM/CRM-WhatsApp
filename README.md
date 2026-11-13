@@ -32,12 +32,12 @@ Para actualizar: reemplazar el contenido de la carpeta y pulsar ↻ en la tarjet
 Requisitos: [Node.js](https://nodejs.org) 20 o superior (recomendado 24 LTS, ver `.nvmrc`), Git y VS Code.
 
 1. Abrir la carpeta del proyecto en VS Code (`code .` desde la terminal o _Archivo → Abrir carpeta_).
-2. Aceptar las extensiones recomendadas (Prettier, Vitest, EditorConfig).
+2. Aceptar las extensiones recomendadas (Prettier, Oxc, Vitest, EditorConfig).
 3. En la terminal integrada:
 
 ```bash
 npm install
-npm run check   # tipos + tests + build
+npm run check   # tipos + lint + tests + build
 npm run dev     # build en modo watch
 ```
 
@@ -74,4 +74,5 @@ tests/                    # Vitest: domain, repositories, contracts
 
 Síntoma: el estado del tablero queda en "Esperando a WhatsApp Web…" o muestra un error.
 Revisar si hay una versión nueva de `@wppconnect/wa-js`, actualizarla a una versión exacta, correr `npm run check`, probar en una PC y luego distribuir.
+
 # CRM-WhatsApp
