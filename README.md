@@ -45,6 +45,14 @@ También hay tareas listas en _Terminal → Ejecutar tarea_: **Build extensión*
 
 Flujo de trabajo: con `npm run dev` corriendo, cargar la carpeta `dist/` en `chrome://extensions` una sola vez; tras cada cambio, pulsar ↻ en la extensión y recargar WhatsApp Web.
 
+**Si desarrollas dentro de WSL (Windows):** Node se instala dentro de WSL, y VS Code se abre con `code .` desde la terminal de WSL. Chrome corre en Windows, así que conviene que el build se copie también a una carpeta de Windows y cargar esa carpeta en `chrome://extensions`:
+
+```bash
+CRM_COPY_TO=/mnt/c/crm-whatsapp-dev npm run dev
+```
+
+En Chrome se carga `C:\crm-whatsapp-dev`. En macOS o en Windows sin WSL no hace falta: se carga `dist/` directamente.
+
 Para entregar una versión: subir `version` en `public/manifest.json`, correr `npm run check` y comprimir el contenido de `dist/`.
 
 **Notas multiplataforma:** `.gitattributes` y `.editorconfig` fuerzan finales de línea LF en ambos sistemas, y los scripts de build usan solo Node (sin comandos de shell), así que funcionan igual en PowerShell, CMD o la terminal de Mac.
