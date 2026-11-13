@@ -35,7 +35,11 @@ const copyPlugin = {
 };
 
 const options = {
-  entryPoints: { bridge: 'src/bridge/main.ts', content: 'src/content/main.tsx' },
+  entryPoints: {
+    'wa-config': 'src/bridge/wa-config.ts',
+    bridge: 'src/bridge/main.ts',
+    content: 'src/content/main.tsx',
+  },
   outdir,
   bundle: true,
   format: 'iife',

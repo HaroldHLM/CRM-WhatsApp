@@ -7,7 +7,7 @@
   "content_scripts": [
     {
       "matches": ["https://web.whatsapp.com/*"],
-      "js": ["wa-js/wppconnect-wa.js", "bridge.js"],
+      "js": ["wa-config.js", "wa-js/wppconnect-wa.js", "bridge.js"],
       "world": "MAIN",
       "run_at": "document_end"
     },
