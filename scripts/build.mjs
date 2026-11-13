@@ -8,10 +8,7 @@ rmSync(outdir, { recursive: true, force: true });
 mkdirSync(`${outdir}/wa-js`, { recursive: true });
 
 cpSync('public/manifest.json', `${outdir}/manifest.json`);
-cpSync(
-  'node_modules/@wppconnect/wa-js/dist/wppconnect-wa.js',
-  `${outdir}/wa-js/wppconnect-wa.js`,
-);
+cpSync('node_modules/@wppconnect/wa-js/dist/wppconnect-wa.js', `${outdir}/wa-js/wppconnect-wa.js`);
 cpSync('node_modules/@wppconnect/wa-js/LICENSE', `${outdir}/wa-js/LICENSE`);
 
 const options = {

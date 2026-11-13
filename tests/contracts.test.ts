@@ -5,7 +5,9 @@ describe('contracts/bridge', () => {
   it('valida mensajes del bridge', () => {
     expect(isBridgeMessage({ source: BRIDGE_SOURCE, type: 'READY' })).toBe(true);
     expect(isBridgeMessage({ source: BRIDGE_SOURCE, type: 'ACTIVE_CHAT', chat: null })).toBe(true);
-    expect(isBridgeMessage({ source: BRIDGE_SOURCE, type: 'ACTIVE_CHAT', chat: { chatId: 1 } })).toBe(false);
+    expect(
+      isBridgeMessage({ source: BRIDGE_SOURCE, type: 'ACTIVE_CHAT', chat: { chatId: 1 } }),
+    ).toBe(false);
     expect(isBridgeMessage({ source: 'otro', type: 'READY' })).toBe(false);
   });
   it('valida mensajes de la UI', () => {

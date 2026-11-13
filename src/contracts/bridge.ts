@@ -20,8 +20,7 @@ export type UiMessage =
   | { source: typeof UI_SOURCE; type: 'GET_ACTIVE_CHAT' }
   | { source: typeof UI_SOURCE; type: 'OPEN_CHAT'; chatId: string };
 
-const isObject = (v: unknown): v is Record<string, unknown> =>
-  typeof v === 'object' && v !== null;
+const isObject = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null;
 
 function isActiveChat(v: unknown): v is ActiveChat {
   return (

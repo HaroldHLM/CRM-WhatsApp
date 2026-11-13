@@ -1,12 +1,12 @@
 # Registro de decisiones
 
-| Fecha | Decisión | Motivo |
-| --- | --- | --- |
-| 2026-11-12 | Ventas usa números de la empresa con WhatsApp Business | Definido por la empresa |
-| 2026-11-12 | 5 columnas fijas: Nuevo, En conversación, Cotizado, Ganado, Perdido | Suficientes por ahora |
-| 2026-11-12 | 2 vendedores, cada uno en su PC; datos locales hasta el Paso 3 | Ir rápido sin servidor |
-| 2026-11-12 | Paso 3: esquema `crm` en el Supabase del ERP; conversión a cliente vía `crm.convertir_lead_a_cliente` | Evitar un microservicio aparte para 2 usuarios |
-| 2026-11-12 | Build con esbuild en vez de Vite + CRXJS | WA-JS debe cargarse como content script en el mundo MAIN; con esbuild el manifest queda explícito y el build tarda < 1 s |
-| 2026-11-12 | WA-JS fijado en 4.7.2 | Versiones nuevas pueden cambiar la API; se actualiza a mano y probando |
-| 2026-11-12 | Permisos: solo `storage` + acceso a `web.whatsapp.com` | Permisos mínimos |
-| 2026-11-12 | Quitar una tarjeta no borra su historial de etapas | Los reportes necesitan el historial completo |
+| Fecha      | Decisión                                                                                              | Motivo                                                                                                                   |
+| ---------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| 2026-11-12 | Ventas usa números de la empresa con WhatsApp Business                                                | Definido por la empresa                                                                                                  |
+| 2026-11-12 | 5 columnas fijas: Nuevo, En conversación, Cotizado, Ganado, Perdido                                   | Suficientes por ahora                                                                                                    |
+| 2026-11-12 | 2 vendedores, cada uno en su PC; datos locales hasta el Paso 3                                        | Ir rápido sin servidor                                                                                                   |
+| 2026-11-12 | Paso 3: esquema `crm` en el Supabase del ERP; conversión a cliente vía `crm.convertir_lead_a_cliente` | Evitar un microservicio aparte para 2 usuarios                                                                           |
+| 2026-11-12 | Build con esbuild en vez de Vite + CRXJS                                                              | WA-JS debe cargarse como content script en el mundo MAIN; con esbuild el manifest queda explícito y el build tarda < 1 s |
+| 2026-11-12 | WA-JS fijado en 4.7.2                                                                                 | Versiones nuevas pueden cambiar la API; se actualiza a mano y probando                                                   |
+| 2026-11-12 | Permisos: solo `storage` + acceso a `web.whatsapp.com`                                                | Permisos mínimos                                                                                                         |
+| 2026-11-12 | Quitar una tarjeta no borra su historial de etapas                                                    | Los reportes necesitan el historial completo                                                                             |

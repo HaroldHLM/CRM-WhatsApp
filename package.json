@@ -7,7 +7,9 @@
     "dev": "node scripts/build.mjs --watch",
     "typecheck": "tsc",
     "test": "vitest run",
-    "check": "npm run typecheck && npm test && npm run build"
+    "check": "npm run typecheck && npm test && npm run build",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "license": "UNLICENSED",
   "dependencies": {
@@ -20,9 +22,13 @@
     "@types/react": "^18.3.31",
     "@types/react-dom": "^18.3.7",
     "esbuild": "^0.28.2",
+    "prettier": "^3.10.1",
     "typescript": "^7.0.2",
     "vitest": "^5.1.0"
   },
   "private": true,
-  "type": "module"
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  }
 }

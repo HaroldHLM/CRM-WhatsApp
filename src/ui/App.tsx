@@ -21,7 +21,11 @@ export function App({ repo }: { repo: LeadsRepository }) {
   const { ready, activeChat, error, openChat } = useBridge();
 
   useEffect(() => {
-    const load = () => repo.getAll().then(setLeads).catch(() => setSaveError('No se pudieron leer los datos.'));
+    const load = () =>
+      repo
+        .getAll()
+        .then(setLeads)
+        .catch(() => setSaveError('No se pudieron leer los datos.'));
     load();
     return repo.onChange(load);
   }, [repo]);
@@ -77,8 +81,10 @@ export function App({ repo }: { repo: LeadsRepository }) {
   return (
     <>
       <div className="fab-group">
-        {ready && activeChat && !activeChat.isGroup && (
-          activeLead ? (
+        {ready &&
+          activeChat &&
+          !activeChat.isGroup &&
+          (activeLead ? (
             <select
               className="fab-stage"
               value={activeLead.stage}
@@ -86,13 +92,16 @@ export function App({ repo }: { repo: LeadsRepository }) {
               onChange={(e) => isStageId(e.target.value) && move(activeLead.chatId, e.target.value)}
             >
               {STAGES.map((s) => (
-                <option key={s.id} value={s.id}>{s.label}</option>
+                <option key={s.id} value={s.id}>
+                  {s.label}
+                </option>
               ))}
             </select>
           ) : (
-            <button className="fab-add" onClick={addActive}>+ Agregar chat al CRM</button>
-          )
-        )}
+            <button className="fab-add" onClick={addActive}>
+              + Agregar chat al CRM
+            </button>
+          ))}
         <button className="fab" onClick={() => setOpen((v) => !v)} aria-expanded={open}>
           {open ? 'Cerrar' : `CRM · ${leads.length}`}
         </button>

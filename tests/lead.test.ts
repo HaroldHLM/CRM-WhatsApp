@@ -7,8 +7,18 @@ const t1 = new Date('2026-11-13T15:30:00.000Z');
 describe('domain/lead', () => {
   it('crea un lead en Nuevo con primer contacto y evento inicial', () => {
     const { lead, event } = createLead({ chatId: '51987654321@c.us', name: ' Ana ' }, t0);
-    expect(lead).toMatchObject({ name: 'Ana', phone: '51987654321', stage: 'nuevo', firstContactAt: t0.toISOString() });
-    expect(event).toEqual({ chatId: '51987654321@c.us', from: null, to: 'nuevo', at: t0.toISOString() });
+    expect(lead).toMatchObject({
+      name: 'Ana',
+      phone: '51987654321',
+      stage: 'nuevo',
+      firstContactAt: t0.toISOString(),
+    });
+    expect(event).toEqual({
+      chatId: '51987654321@c.us',
+      from: null,
+      to: 'nuevo',
+      at: t0.toISOString(),
+    });
   });
 
   it('usa el teléfono como nombre si no hay nombre', () => {
@@ -20,7 +30,12 @@ describe('domain/lead', () => {
     const r = moveLead(lead, 'cotizado', t1);
     expect(r.lead.stage).toBe('cotizado');
     expect(r.lead.firstContactAt).toBe(t0.toISOString());
-    expect(r.event).toEqual({ chatId: 'x@c.us', from: 'nuevo', to: 'cotizado', at: t1.toISOString() });
+    expect(r.event).toEqual({
+      chatId: 'x@c.us',
+      from: 'nuevo',
+      to: 'cotizado',
+      at: t1.toISOString(),
+    });
   });
 
   it('mover a la misma etapa no genera evento', () => {

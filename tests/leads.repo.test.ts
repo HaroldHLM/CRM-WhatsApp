@@ -6,7 +6,9 @@ function fakeStore(): KeyValueStore {
   const data: Record<string, unknown> = {};
   return {
     async get(keys) {
-      return Object.fromEntries(keys.filter((k) => k in data).map((k) => [k, structuredClone(data[k])]));
+      return Object.fromEntries(
+        keys.filter((k) => k in data).map((k) => [k, structuredClone(data[k])]),
+      );
     },
     async set(items) {
       Object.assign(data, structuredClone(items));

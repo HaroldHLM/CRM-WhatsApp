@@ -11,26 +11,43 @@ Kanban de ventas sobre WhatsApp Web para el equipo comercial. **No envía mensaj
 - Guarda `firstContactAt` y el historial de cambios de etapa (base de los reportes del Paso 5).
 - Datos en `chrome.storage.local` de cada PC (cada vendedor ve sus propios leads hasta el Paso 3).
 
+## Compatibilidad
+
+La misma extensión funciona sin cambios en **Windows y macOS** (y Linux), en cualquier navegador basado en Chromium: Google Chrome, Microsoft Edge o Brave. No hay nada específico de un sistema operativo: corre dentro de WhatsApp Web.
+
 ## Instalar en una PC (vendedor)
 
-1. Descomprimir `crm-whatsapp-extension-v0.1.0.zip` en una carpeta fija, por ejemplo `C:\crm-whatsapp`. No borrarla después.
-2. En Chrome abrir `chrome://extensions` y activar **Modo de desarrollador** (arriba a la derecha).
-3. Clic en **Cargar descomprimida** y elegir la carpeta (la que contiene `manifest.json`).
+1. Descomprimir `crm-whatsapp-extension-vX.Y.Z.zip` en una carpeta fija que no se vaya a borrar:
+   - Windows: `C:\crm-whatsapp`
+   - macOS: `~/Applications/crm-whatsapp` (o cualquier carpeta del usuario)
+2. Abrir la página de extensiones y activar **Modo de desarrollador** (arriba a la derecha):
+   - Chrome: `chrome://extensions` · Edge: `edge://extensions` · Brave: `brave://extensions`
+3. Clic en **Cargar descomprimida** y elegir la carpeta que contiene `manifest.json`.
 4. Abrir o recargar `https://web.whatsapp.com`. Abajo a la derecha aparece el botón **CRM · 0**.
 
 Para actualizar: reemplazar el contenido de la carpeta y pulsar ↻ en la tarjeta de la extensión. Los datos se conservan.
 
-## Desarrollo
+## Desarrollo (VS Code, Windows o macOS)
 
-Requisitos: Node 20+.
+Requisitos: [Node.js](https://nodejs.org) 20 o superior (recomendado 24 LTS, ver `.nvmrc`), Git y VS Code.
+
+1. Abrir la carpeta del proyecto en VS Code (`code .` desde la terminal o _Archivo → Abrir carpeta_).
+2. Aceptar las extensiones recomendadas (Prettier, Vitest, EditorConfig).
+3. En la terminal integrada:
 
 ```bash
 npm install
 npm run check   # tipos + tests + build
-npm run dev     # build en modo watch (recargar la extensión tras cada cambio)
+npm run dev     # build en modo watch
 ```
 
-La extensión compilada queda en `dist/`.
+También hay tareas listas en _Terminal → Ejecutar tarea_: **Build extensión** (`Ctrl+Shift+B` en Windows, `Cmd+Shift+B` en Mac), **Dev (watch)** y **Check**.
+
+Flujo de trabajo: con `npm run dev` corriendo, cargar la carpeta `dist/` en `chrome://extensions` una sola vez; tras cada cambio, pulsar ↻ en la extensión y recargar WhatsApp Web.
+
+Para entregar una versión: subir `version` en `public/manifest.json`, correr `npm run check` y comprimir el contenido de `dist/`.
+
+**Notas multiplataforma:** `.gitattributes` y `.editorconfig` fuerzan finales de línea LF en ambos sistemas, y los scripts de build usan solo Node (sin comandos de shell), así que funcionan igual en PowerShell, CMD o la terminal de Mac.
 
 ## Estructura
 
